@@ -114,42 +114,54 @@ const resolveAllRace = Promise.race([
 
 // Fetch request na API do GitHub
 // Fetch API
-const userName = "MuriloNP";
+const userName = prompt("User Name: ");
 const myBodyHtml = document.querySelector("body");
-//fetch retorna uma promise
-fetch(`https://api.github.com/users/${userName}`, {
-  method: "GET",
-  headers: {
-    Accept: "application/vnd.github.v3+json",
-  },
-})
-  .then((response) => {
-    console.log(typeof response);
-    console.log(response);
-    return response.json();
-  })
-  .then((data) => {
-    console.log(data);
-    const arrayInfos = [
-      data.name,
-      data.location,
-      data.bio,
-      data.followers,
-      data.following,
-      data.public_repos,
-      data.url,
-    ];
-    const myUl = document.createElement("ul");
-    myBodyHtml.appendChild(myUl);
+const btnCancel = confirm("Cancelamento? [OK] = Não, [Cancel] = Sim");
 
-    for (let index = 0; index < arrayInfos.length; index++) {
-      const myLi = document.createElement("li");
-      myUl.appendChild(myLi);
+console.log(userName);
 
-      const myText = document.createTextNode(arrayInfos[index]);
-      myLi.appendChild(myText);
-    }
+if (userName === "" && btnCancel === false) {
+  alert("Erro: Campo vazio");
+} else if (userName !== "" && btnCancel === false) {
+  alert("Erro: Voce cancelou");
+} else {
+  //fetch retorna uma promise
+  fetch(`https://api.github.com/users/${userName}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/vnd.github.v3+json",
+    },
   })
-  .catch((error) => {
-    console.log(`Erro: ${error}`);
-  });
+    .then((response) => {
+      console.log(typeof response);
+      console.log(response);
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data);
+      const objetoInfos = {
+        name: data.name,
+        location: data.location,
+        bio: data.bio,
+        followers: data.followers,
+        following: data.following,
+        public_repos: data.public_repos,
+        url: data.url,
+      };
+      const myUl = document.createElement("ul");
+      myBodyHtml.appendChild(myUl);
+
+      for (let atribute in objetoInfos) {
+        const myLi = document.createElement("li");
+        myUl.appendChild(myLi);
+
+        const myText = document.createTextNode(
+          `${atribute} : ${objetoInfos[atribute]}`
+        );
+        myLi.appendChild(myText);
+      }
+    })
+    .catch((error) => {
+      console.log(`Erro: ${error}`);
+    });
+}
